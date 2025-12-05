@@ -76,13 +76,8 @@ class AutomationController extends ChangeNotifier {
     if (controller != null) {
       _appendLog("Syncing cookies and reloading...");
       
-      // Attempt to flush cookies if supported by the installed plugin version.
-      // Older versions had CookieManager.instance().flush(); newer ones may not.
-      try {
-        await (CookieManager.instance() as dynamic).flush();
-      } catch (e) {
-        _appendLog("Cookie flush not available: $e");
-      }
+      // Removed CookieManager.instance().flush() as it is not supported in v6.
+      // Cookies are flushed automatically by the WebView.
       
       controller.reload();
     }
@@ -128,7 +123,7 @@ class AutomationController extends ChangeNotifier {
       // 2. Inject Code
       _setStatus(AutomationStatus.injectingCode);
       // Escape the code for JS string
-      final safeCode = code.replaceAll('`', '\\`').replaceAll('\', '\\u007F');
+      final safeCode = code.replaceAll('`', '\\`').replaceAll('\$', '\\\$');
       final injectScript = "($jsInjectCode)(`$safeCode`)";
       
       String injectRes = await _evaluate(controller, injectScript);
