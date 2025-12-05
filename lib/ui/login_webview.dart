@@ -13,11 +13,6 @@ class LoginWebView extends StatefulWidget {
 class _LoginWebViewState extends State<LoginWebView> {
   final GlobalKey webViewKey = GlobalKey();
   
-  // Use Desktop UA to ensure consistent cookie handling if sharing cookies
-  // But for user login, mobile view is easier. 
-  // IMPORTANT: Cookies set here must be accessible by the HeadlessWebView.
-  // InAppWebView uses a shared CookieManager by default on Android.
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,9 +31,11 @@ class _LoginWebViewState extends State<LoginWebView> {
       ),
       body: InAppWebView(
         key: webViewKey,
-        initialUrlRequest: URLRequest(url: WebUri("https://www.tradingview.com/accounts/signin/")),
+        // CHANGED: Go to homepage instead of direct signin link to avoid rate limits
+        initialUrlRequest: URLRequest(url: WebUri("https://www.tradingview.com/")),
         initialSettings: InAppWebViewSettings(
-          userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          // CHANGED: Removed custom UserAgent. Uses default Android UA now.
+          // This prevents the "Locked out" error.
           domStorageEnabled: true,
           javaScriptEnabled: true,
         ),
