@@ -1,0 +1,36 @@
+RELEASE NOTES
+=============
+
+Version: 1.0.0
+Date: 2024-05-23
+
+Summary
+-------
+This release contains the first version of the TradingView Pine Script Validator for Android.
+The application allows users to validate Pine Scripts using the official TradingView compiler via a headless automation engine.
+
+Features
+--------
+- **Standalone Android APK:** No PC or Server required.
+- **Glassmorphism UI:** Modern, clean, and aesthetic dark mode interface.
+- **Pine Editor Automation:** 
+  - Automatically logs in (via persistent session).
+  - Opens Pine Editor.
+  - Injects code.
+  - Clicks "Add to Chart".
+  - Reports success/error messages.
+- **Offline Capable UI:** The UI works offline, though validation requires internet.
+
+Installation
+------------
+1. Download `pine_validator.apk`.
+2. Install on your Android device (Allow Unknown Sources).
+3. Open the app and log in to TradingView once.
+4. Start validating scripts!
+
+Technical Details
+-----------------
+- Built with Flutter 3.19.
+- Uses `flutter_inappwebview` 6.0.0 for Headless Chrome automation.
+- Targeting Android SDK 34.
+- Architecture: ARM64-v8a.
