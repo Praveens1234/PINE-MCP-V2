@@ -32,14 +32,20 @@ class AutomationController extends ChangeNotifier {
   final String _url = "https://www.tradingview.com/chart/";
 
   Future<void> init() async {
-    // If already running, do nothing or just reload
     if (_headlessWebView != null) {
-       reloadSession();
+       syncSessionAndReload();
        return;
     }
 
     _setStatus(AutomationStatus.initializing);
     _appendLog("Initializing Headless Browser...");
+
+    // Anti-bot detection script
+    // Masks navigator.webdriver to undefined
+    final antiBotScript = UserScript(
+      source: "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})",
+      injectionTime: UserScriptInjectionTime.AT_DOCUMENT_START,
+    );
 
     _headlessWebView = HeadlessInAppWebView(
       initialUrlRequest: URLRequest(url: WebUri(_url)),
@@ -50,6 +56,7 @@ class AutomationController extends ChangeNotifier {
         domStorageEnabled: true,
         useWideViewPort: true, 
       ),
+      initialUserScripts: UnmodifiableListView([antiBotScript]),
       onWebViewCreated: (controller) {
         _appendLog("WebView Created.");
       },
@@ -63,12 +70,15 @@ class AutomationController extends ChangeNotifier {
     _setStatus(AutomationStatus.idle);
   }
 
-  Future<void> reloadSession() async {
+  Future<void> syncSessionAndReload() async {
     final controller = _headlessWebView?.webViewController;
     if (controller != null) {
-      _appendLog("Reloading session to capture login...");
+      _appendLog("Syncing cookies and reloading...");
+      
+      // Explicitly try to flush cookies to ensure they are written
+      await CookieManager.instance().flush();
+      
       controller.reload();
-      // Wait for reload to potentially trigger onLoadStop -> checkLoginStatus
     }
   }
 
