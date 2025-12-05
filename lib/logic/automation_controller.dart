@@ -32,6 +32,12 @@ class AutomationController extends ChangeNotifier {
   final String _url = "https://www.tradingview.com/chart/";
 
   Future<void> init() async {
+    // If already running, do nothing or just reload
+    if (_headlessWebView != null) {
+       reloadSession();
+       return;
+    }
+
     _setStatus(AutomationStatus.initializing);
     _appendLog("Initializing Headless Browser...");
 
@@ -55,6 +61,15 @@ class AutomationController extends ChangeNotifier {
 
     await _headlessWebView?.run();
     _setStatus(AutomationStatus.idle);
+  }
+
+  Future<void> reloadSession() async {
+    final controller = _headlessWebView?.webViewController;
+    if (controller != null) {
+      _appendLog("Reloading session to capture login...");
+      controller.reload();
+      // Wait for reload to potentially trigger onLoadStop -> checkLoginStatus
+    }
   }
 
   Future<void> checkLoginStatus(InAppWebViewController controller) async {

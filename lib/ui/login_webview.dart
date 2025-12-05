@@ -23,6 +23,7 @@ class _LoginWebViewState extends State<LoginWebView> {
             icon: Icon(Icons.check),
             onPressed: () {
               // Trigger a check in the controller
+              // The controller will detect existing headless view and reload it
               Provider.of<AutomationController>(context, listen: false).init();
               Navigator.pop(context);
             },
@@ -31,11 +32,10 @@ class _LoginWebViewState extends State<LoginWebView> {
       ),
       body: InAppWebView(
         key: webViewKey,
-        // CHANGED: Go to homepage instead of direct signin link to avoid rate limits
+        // Go to homepage to avoid rate limits
         initialUrlRequest: URLRequest(url: WebUri("https://www.tradingview.com/")),
         initialSettings: InAppWebViewSettings(
-          // CHANGED: Removed custom UserAgent. Uses default Android UA now.
-          // This prevents the "Locked out" error.
+          // Use default Android UA to avoid "Locked out" error
           domStorageEnabled: true,
           javaScriptEnabled: true,
         ),
